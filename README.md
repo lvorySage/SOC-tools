@@ -78,3 +78,16 @@ python3 main.py
 
 - Verbose Results:
 - Modify the script to only display IPs found in the lookups and indicate each level in the results file.
+
+
+
+
+
+ # v 0.0.1 update and improvements#
+
+ Summary of Changes
+
+    - Prompt for API Key: The script now prompts the user to provide an API key or type 'No' if they don't have one.
+    - Estimation of Severity: If the API key is not provided, the script estimates the abuse confidence score based on the IPsum level.
+    - Verbose Results: The script only prints IPs that are found in the lookups.
+    - Result Indication by Level: Each level of lookup is indicated in the results file before listing the IPs found at that level.
