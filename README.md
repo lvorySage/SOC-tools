@@ -63,3 +63,18 @@ python main.py default name of the script that you will have to run is "main.py"
 
 # On macOS/Linux
 python3 main.py
+
+
+## future updates 
+
+1. **features that will be added in the next commits:** 
+
+
+- Prompt for the API Key:
+- Add a prompt at the beginning of the script to ask the user if they have an API key.
+
+- Estimate Severity or Trust Score:
+- If the user does not provide an API key, add a simple heuristic to estimate the severity or trust score based on IPsum levels.
+
+- Verbose Results:
+- Modify the script to only display IPs found in the lookups and indicate each level in the results file.
