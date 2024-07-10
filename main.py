@@ -18,7 +18,7 @@ def read_ips_from_file(file_path):
 
 async def fetch_ipsum_list(level):
     """Fetch the list of bad IPs from IPsum for the given level."""
-    url = f'https://raw.githubusercontent.com/stamparm/ipsum/master/levels/{level}.txt'
+    url = f'{IPSUM_BASE_URL}{level}.txt'
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             response.raise_for_status()
@@ -51,23 +51,26 @@ async def scan_ips(level, ips, api_key):
         tasks = []
         for ip in ips:
             if ip in ipsum_ips:
-                results.append({'ip': ip, 'abuseConfidenceScore': 'N/A', 'in_ipsum': True, 'level': level})
+                abuse_confidence_score = 'N/A'
+                if not api_key:
+                    abuse_confidence_score = (level / 8) * 100  # Estimate score based on level
+                results.append({'ip': ip, 'abuseConfidenceScore': abuse_confidence_score, 'level': level})
                 bad_ip_count += 1
-                print(f"IP: {ip} found in IPsum level {level}.")
+                print(f"IP: {ip} found in IPsum level {level}. Estimated score: {abuse_confidence_score}")
             elif api_key:
                 tasks.append(asyncio.create_task(check_ip_abuse(session, ip, api_key)))
         
-        responses = await asyncio.gather(*tasks, return_exceptions=True)
-        for ip, response in zip(ips, responses):
-            if isinstance(response, Exception):
-                print(f"Error checking IP {ip}: {response}")
-                results.append({'ip': ip, 'abuseConfidenceScore': 'N/A', 'in_ipsum': False, 'level': level})
-            else:
-                abuse_confidence_score = response['data']['abuseConfidenceScore']
-                if abuse_confidence_score != 'N/A':
-                    bad_ip_count += 1
-                results.append({'ip': ip, 'abuseConfidenceScore': abuse_confidence_score, 'in_ipsum': False, 'level': level})
-                print(f"IP: {ip} checked with AbuseIPDB. Abuse Confidence Score: {abuse_confidence_score}")
+        if api_key:
+            responses = await asyncio.gather(*tasks, return_exceptions=True)
+            for ip, response in zip(ips, responses):
+                if isinstance(response, Exception):
+                    print(f"Error checking IP {ip}: {response}")
+                else:
+                    abuse_confidence_score = response['data']['abuseConfidenceScore']
+                    if abuse_confidence_score != 'N/A':
+                        bad_ip_count += 1
+                    results.append({'ip': ip, 'abuseConfidenceScore': abuse_confidence_score, 'level': level})
+                    print(f"IP: {ip} checked with AbuseIPDB. Abuse Confidence Score: {abuse_confidence_score}")
 
     return results, bad_ip_count
 
@@ -76,7 +79,7 @@ def write_results_to_file(results, file_path, file_format):
     if file_format == 'txt':
         with open(file_path, 'w') as file:
             for result in results:
-                file.write(f"Level: {result['level']} - IP: {result['ip']}, Abuse Confidence Score: {result.get('abuseConfidenceScore', 'N/A')}, Found in IPsum: {result['in_ipsum']}\n")
+                file.write(f"Level: {result['level']} - IP: {result['ip']}, Abuse Confidence Score: {result.get('abuseConfidenceScore', 'N/A')}\n")
     elif file_format == 'csv':
         df = pd.DataFrame(results)
         df.to_csv(file_path, index=False)
