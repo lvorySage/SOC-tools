@@ -91,3 +91,28 @@ python3 main.py
     - Estimation of Severity: If the API key is not provided, the script estimates the abuse confidence score based on the IPsum level.
     - Verbose Results: The script only prints IPs that are found in the lookups.
     - Result Indication by Level: Each level of lookup is indicated in the results file before listing the IPs found at that level.
+
+
+
+
+    Myore improvements :
+    if the user does not provide an API key, the script does not attempt to connect to the AbuseIPDB API. Additionally, the script now estimates the abuse confidence score based on the IPsum level if the API key is not supplied.
+
+- Skipping API Calls if No API Key: The script now checks if an API key is provided before attempting to connect to the AbuseIPDB API. If no API key is provided, it estimates the abuse confidence score based on the IPsum level.
+- Verbose Output: The script now only prints IPs that are found in the lookups.
+- Estimated Scores: The script assigns an estimated score based on the IPsum level if no API key is provided.
+
+
+
+
+
+    Yet more improvments: 
+    
+    - Formatting Results:
+        Results are formatted in a tabular format for better readability.
+        The write_results_to_file function ensures that only the IPs that match the criteria are written to the results file.
+    - Estimated Scores:
+        Estimated abuse confidence scores are rounded to two decimal places.
+    - Output Headers:
+        The results file includes headers to make it easier to understand the information provided.
+This should result in a neatly formatted output that a SOC analyst can quickly review to determine which IPs need to be blocked or further investigated.
