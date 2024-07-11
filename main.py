@@ -50,28 +50,10 @@ async def check_ip_abuse(session, ip, api_key):
 
     try:
         async with session.get(ABUSEIPDB_URL, headers=headers, params=querystring) as response:
-            if response.status == 400:
+            if response.status != 200:
                 error_detail = await response.text()
                 print(f"Error checking IP {ip}: {response.status} - {error_detail}")
-            elif response.status == 401:
-                print(f"Unauthorized request for IP {ip}: Invalid API key")
-            elif response.status == 403:
-                print(f"Forbidden request for IP {ip}: Access is forbidden")
-            elif response.status == 404:
-                print(f"Not found: The resource for IP {ip} does not exist")
-            elif response.status == 422:
-                error_detail = await response.text()
-                print(f"Unprocessable Entity for IP {ip}: {response.status} - {error_detail}")
-            elif response.status == 500:
-                print(f"Internal server error for IP {ip}: Try again later")
-            elif response.status == 502:
-                print(f"Bad Gateway for IP {ip}: Received invalid response from upstream server")
-            elif response.status == 503:
-                print(f"Service Unavailable for IP {ip}: The server is temporarily unavailable")
-            elif response.status == 504:
-                print(f"Gateway Timeout for IP {ip}: Upstream server didn't respond in time")
             else:
-                response.raise_for_status()
                 return await response.json()
     except aiohttp.ClientResponseError as e:
         print(f"HTTP Error checking IP {ip}: {e.status} - {e.message}")
@@ -124,8 +106,8 @@ def write_results_to_file(results, file_path, file_format):
 async def main():
     """Main function to read IPs, check against IPsum and AbuseIPDB, and write results."""
     while True:
-        api_key_input = input("Do you have an AbuseIPDB API key? Paste it if yes or type 'No': ").strip()
-        if api_key_input.lower() == 'no':
+        api_key_input = input("Do you have an AbuseIPDB API key? Paste it if yes or type 'No': ").strip().lower()
+        if api_key_input in ('no', 'n'):
             api_key = None
             break
         elif api_key_input:
@@ -137,23 +119,24 @@ async def main():
     ips = read_ips_from_file(TXT_FILE_PATH)
     all_results = {}
     level = 1
+    previous_bad_ip_count = -1
 
     while level <= 8 and not api_key:
         print(f"\nScanning with IPsum level {level}...")
         results, bad_ip_count = await scan_ips(ips, api_key, level)
+        if bad_ip_count == 0 and previous_bad_ip_count == 0:
+            print(f"No IPs found in level {level}. Stopping the scan.")
+            break
+        previous_bad_ip_count = bad_ip_count
         for result in results:
             ip = result['ip']
             if ip in all_results:
                 all_results[ip]['levels'].append(level)
+                all_results[ip]['abuseConfidenceScore'] = max(all_results[ip]['abuseConfidenceScore'], result['abuseConfidenceScore'])
             else:
                 all_results[ip] = result
 
         print(f"\nTotal bad IPs found with level {level}: {bad_ip_count}")
-        continue_scanning = input("Do you want to continue scanning with the next level? (yes/no): ").strip().lower()
-
-        if continue_scanning != 'yes':
-            break
-
         level += 1
 
     if api_key:
@@ -162,8 +145,10 @@ async def main():
         for result in results:
             ip = result['ip']
             if ip in all_results:
-                all_results[ip]['levels'].append(level)
+                all_results[ip]['levels'].append('AbuseIPDB')
+                all_results[ip]['abuseConfidenceScore'] = max(all_results[ip]['abuseConfidenceScore'], result['abuseConfidenceScore'])
             else:
+                result['levels'] = ['AbuseIPDB']
                 all_results[ip] = result
 
     file_format = input("Enter the output file format (txt/csv): ").strip().lower()
