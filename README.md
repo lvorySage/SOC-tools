@@ -149,3 +149,22 @@ part 3 the script dosn't print out the expected
 - Verbose Printing:
 
     'Only' print matching IPs to the terminal.
+
+
+
+IP Validation:
+
+    - Added a validate_ip function to check the validity of IP addresses using Python's ipaddress module.
+    - Modified read_ips_from_file to only return valid IPs.
+
+Error Handling:
+
+    - Improved error handling to log invalid IP addresses and continue processing valid ones.
+    - Added better logging for errors during API calls.
+
+
+
+
+Better API error hadeling and removing the duplicates from the results file. only update the level of the IP:
+
+The updated script that includes handling for additional HTTP status codes, and the modifications to use only the AbuseIPDB API when an API key is supplied. Additionally, the script now avoids duplicates and updates the level if an IP is found in multiple levels.
