@@ -3,6 +3,7 @@ import asyncio
 import aiohttp
 import pandas as pd
 import ipaddress
+from art import text2art  # Importing the art library
 
 # Constants
 ABUSEIPDB_URL = 'https://api.abuseipdb.com/api/v2/check'
@@ -10,6 +11,12 @@ TXT_FILE_PATH = 'ips.txt'
 OUTPUT_FILE_PATH_TXT = 'results.txt'
 OUTPUT_FILE_PATH_CSV = 'results.csv'
 IPSUM_BASE_URL = 'https://raw.githubusercontent.com/stamparm/ipsum/master/levels/'  # Base URL for IPsum lists
+
+def display_welcome_message():
+    """Display a welcome message using ASCII art."""
+    print(text2art("IP Scanner", font='block'))
+    print("Launching the OLNG SOC IP Scanner Tool!")
+    print("This tool checks IP addresses against AbuseIPDB and IPsum lists.\n")
 
 def read_ips_from_file(file_path):
     """Read IP addresses from a file and validate them."""
@@ -105,6 +112,8 @@ def write_results_to_file(results, file_path, file_format):
 
 async def main():
     """Main function to read IPs, check against IPsum and AbuseIPDB, and write results."""
+    display_welcome_message()
+    
     while True:
         api_key_input = input("Do you have an AbuseIPDB API key? Paste it if yes or type 'No': ").strip().lower()
         if api_key_input in ('no', 'n'):
