@@ -1,7 +1,6 @@
 import os
 import asyncio
 import aiohttp
-import time
 import pandas as pd
 
 # Constants
@@ -53,7 +52,7 @@ async def scan_ips(level, ips, api_key):
             if ip in ipsum_ips:
                 abuse_confidence_score = 'N/A'
                 if not api_key:
-                    abuse_confidence_score = (level / 8) * 100  # Estimate score based on level
+                    abuse_confidence_score = round((level / 8) * 100, 2)  # Estimate score based on level
                 results.append({'ip': ip, 'abuseConfidenceScore': abuse_confidence_score, 'level': level})
                 bad_ip_count += 1
                 print(f"IP: {ip} found in IPsum level {level}. Estimated score: {abuse_confidence_score}")
@@ -78,8 +77,11 @@ def write_results_to_file(results, file_path, file_format):
     """Write the results to an output file."""
     if file_format == 'txt':
         with open(file_path, 'w') as file:
+            file.write(f"{'IP Address':<20}{'Confidence Score':<20}{'IPsum Level':<15}\n")
+            file.write(f"{'-'*55}\n")
             for result in results:
-                file.write(f"Level: {result['level']} - IP: {result['ip']}, Abuse Confidence Score: {result.get('abuseConfidenceScore', 'N/A')}\n")
+                if result['abuseConfidenceScore'] != 'N/A':
+                    file.write(f"{result['ip']:<20}{result['abuseConfidenceScore']:<20}{result['level']:<15}\n")
     elif file_format == 'csv':
         df = pd.DataFrame(results)
         df.to_csv(file_path, index=False)

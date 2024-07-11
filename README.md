@@ -107,7 +107,7 @@ python3 main.py
 
 
     Yet more improvments: 
-    
+
     - Formatting Results:
         Results are formatted in a tabular format for better readability.
         The write_results_to_file function ensures that only the IPs that match the criteria are written to the results file.
@@ -116,3 +116,36 @@ python3 main.py
     - Output Headers:
         The results file includes headers to make it easier to understand the information provided.
 This should result in a neatly formatted output that a SOC analyst can quickly review to determine which IPs need to be blocked or further investigated.
+
+
+
+
+part 2 
+
+- Formatting Output:
+
+    The results file is formatted in a neat tabular format for better readability.
+    Only IPs with a valid confidence score or those found in IPsum are included in the results.
+
+- Score Calculation:
+
+    If no API key is provided, the abuse confidence score is estimated based on the level, where higher levels indicate a higher confidence score (e.g., level 1 = 12.5, level 8 = 100).
+
+
+part 3 the script dosn't print out the expected 
+
+- Ensure Correct URL for IPsum List:
+
+    'Confirm' the base URL and fetch URL are correct.
+
+- Fix Results Collection:
+
+    'Add' an 'in_ipsum' field to differentiate IPs found in IPsum from those checked via AbuseIPDB.
+
+- Write Only Relevant Results:
+
+    'Ensure' only relevant IPs (those found) are written to the output file.
+
+- Verbose Printing:
+
+    'Only' print matching IPs to the terminal.
