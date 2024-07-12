@@ -14,7 +14,7 @@ IPSUM_BASE_URL = 'https://raw.githubusercontent.com/stamparm/ipsum/master/levels
 
 def display_welcome_message():
     """Display a welcome message using ASCII art."""
-    print(text2art("IP Scanner", font='block'))
+    print(text2art("OLNG Scanner", font='3-d'))
     print("Launching the OLNG SOC IP Scanner Tool!")
     print("This tool checks IP addresses against AbuseIPDB and IPsum lists.\n")
 
