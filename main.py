@@ -4,6 +4,7 @@ import aiohttp
 import pandas as pd
 import ipaddress
 from art import text2art  # Importing the art library
+from termcolor import colored
 
 # Constants
 ABUSEIPDB_URL = 'https://api.abuseipdb.com/api/v2/check'
@@ -14,7 +15,9 @@ IPSUM_BASE_URL = 'https://raw.githubusercontent.com/stamparm/ipsum/master/levels
 
 def display_welcome_message():
     """Display a welcome message using ASCII art."""
-    print(text2art("OLNG Scanner", font='3-d'))
+    art_text = text2art("OLNG Scanner", font='3-d')
+    colored_art = colored(art_text, 'red')
+    print(colored_art)
     print("Launching the OLNG SOC IP Scanner Tool!")
     print("This tool checks IP addresses against AbuseIPDB and IPsum lists.\n")
 
