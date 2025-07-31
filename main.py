@@ -71,7 +71,7 @@ async def check_ip_abuse(session, ip, api_key):
         return None
 
 async def scan_ips(ips, api_key, level=None):
-    """Scan IPs against the AbuseIPDB or IPsum lists."""
+
     results = []
     bad_ip_count = 0
 
@@ -93,7 +93,7 @@ async def scan_ips(ips, api_key, level=None):
                 ipsum_ips = await fetch_ipsum_list(level)
                 for ip in ips:
                     if ip in ipsum_ips:
-                        abuse_confidence_score = round((level / 8) * 100, 2)  # Estimate score based on level
+                        abuse_confidence_score = round((level / 8) * 100, 2)  
                         results.append({'ip': ip, 'abuseConfidenceScore': abuse_confidence_score, 'levels': [level]})
                         bad_ip_count += 1
                         print(f"IP: {ip} found in IPsum level {level}. Estimated score: {abuse_confidence_score}")
@@ -118,6 +118,7 @@ async def main():
     """Main function to read IPs, check against IPsum and AbuseIPDB, and write results."""
     display_welcome_message()
     
+    # Ask for AbuseIPDB API key
     while True:
         api_key_input = input("Do you have an AbuseIPDB API key? Paste it if yes or type 'No': ").strip().lower()
         if api_key_input in ('no', 'n'):
@@ -128,6 +129,20 @@ async def main():
             break
         else:
             print("Invalid input. Please enter a valid API key or type 'No'.")
+
+    # If no AbuseIPDB key, ask for VirusTotal key
+    vt_api_key = None
+    if not api_key:
+        while True:
+            vt_api_key_input = input("Do you have a VirusTotal API key? Paste it if yes or type 'No': ").strip().lower()
+            if vt_api_key_input in ('no', 'n'):
+                vt_api_key = None
+                break
+            elif vt_api_key_input:
+                vt_api_key = vt_api_key_input
+                break
+            else:
+                print("Invalid input. Please enter a valid API key or type 'No'.")
 
     ips = read_ips_from_file(TXT_FILE_PATH)
     all_results = {}
