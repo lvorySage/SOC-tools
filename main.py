@@ -3,7 +3,8 @@ import asyncio
 import aiohttp
 import pandas as pd
 import ipaddress
-from art import text2art  # Importing the art library
+from virustotal import check_ip_VT  
+from art import text2art 
 from termcolor import colored
 
 # Constants
@@ -22,14 +23,14 @@ def display_welcome_message():
     print("This tool checks IP addresses against AbuseIPDB and IPsum lists.\n")
 
 def read_ips_from_file(file_path):
-    """Read IP addresses from a file and validate them."""
+   
     with open(file_path, 'r') as file:
         ips = [line.strip() for line in file.readlines()]
         valid_ips = [ip for ip in ips if validate_ip(ip)]
         return valid_ips
 
 def validate_ip(ip):
-    """Validate an IP address."""
+
     try:
         ipaddress.ip_address(ip)
         return True
@@ -38,7 +39,7 @@ def validate_ip(ip):
         return False
 
 async def fetch_ipsum_list(level):
-    """Fetch the list of bad IPs from IPsum for the given level."""
+    
     url = f'{IPSUM_BASE_URL}{level}.txt'
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
@@ -47,7 +48,7 @@ async def fetch_ipsum_list(level):
             return set(line.strip() for line in text.splitlines() if line.strip() and not line.startswith('#'))
 
 async def check_ip_abuse(session, ip, api_key):
-    """Check the abuse confidence score of an IP using the AbuseIPDB API."""
+    
     querystring = {
         'ipAddress': ip,
         'maxAgeInDays': '90'
