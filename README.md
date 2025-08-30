@@ -1,7 +1,7 @@
 #SOC-tools
 # IP Scanner Script
 
-This Python script reads IP addresses from a file, checks them against IPsum lists which is another git hub repo that gets updated daily, and uses the AbuseIPDB API to determine their abuse confidence scores. The results are saved in either a text or CSV file.
+This Python script reads IP addresses from a file, checks them against IPsum lists which is another git hub repo that gets updated daily, and uses the AbuseIPDB API to determine their abuse confidence scores. As well as using Virustotal api for more accurate corelations. The results are saved in either a text or CSV file.
 
 ## Prerequisites
 
